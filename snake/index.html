@@ -1,126 +1,168 @@
 <!DOCTYPE html>
-<!--<html manifest="snake.appcache">-->
+<html>
 <head>
-<!--
+  <title></title>
+  <style>
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
 
-JavaScript Snake
-By Patrick Gillespie
-http://patorjk.com/games/snake
-
-Source code is available here: https://github.com/patorjk/JavaScript-Snake
-
--->
-    <meta charset="utf-8">
-    <title>JavaScript Snake</title>
-    <link rel=stylesheet id="style" type="text/css" href="./css/main-snake.css" />
-    <link rel="shortcut icon" href="css/images/favicon.png" />
-    <style>
-      .snake-toolbar {
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index:10000;
-        padding: 5px;
-      }
-    </style>
-<script>
-
-function getTheme () {
-    function changeTheme (Theme) {
-        document.getElementById('style').setAttribute('href', Theme);
-    }
-    var index = document.getElementById("select").selectedIndex;
-    switch (index) {
-        case 0: 
-          changeTheme('css/light-snake.css?' + Math.random());
-          break;
-        case 1: 
-          changeTheme('css/main-snake.css?' + Math.random());
-          break;
-        case 2: 
-          changeTheme('css/dark-snake.css?' + Math.random());
-          break;
-    case 3: 
-          changeTheme('css/green-snake.css?' + Math.random());
-          break;
-        default:
-          changeTheme('css/main-snake.css?' + Math.random());
-          break;
-    }
-    setTimeout(function() {
-        document.getElementById('game-area').focus();
-    }, 10);
-}
-
-if (navigator.onLine && window.location.hostname === 'patorjk.com') {
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-3312460-1']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-}
-</script>
+  body {
+    background: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  canvas {
+    border: 1px solid white;
+  }
+  </style>
 </head>
 <body>
-    <div class="snake-toolbar">
-      <div style="display:inline-block;margin-right:10px;">
-        <span>Theme:</span>
-        <select onchange="getTheme()" id="select">
-            <option>Light Theme by yokesharun</option>
-            <option selected>Main Theme by patorjk</option>
-            <option>Dark Theme by KenyStev</option>
-            <option>Green Theme by CoffeeCatDE</option>
+<canvas width="400" height="400" id="game"></canvas>
+<script>
+var canvas = document.getElementById('game');
+var context = canvas.getContext('2d');
 
-        </select>
-      </div>
-      <div style="display:inline-block;margin-right:10px;">
-        <span>Mode:</span>
-        <select id="selectMode">
-            <option value="100">Easy</option>
-            <option value="75" selected>Medium</option>
-            <option value="50">Hard</option>
-        </select>
-      </div>
-      <button onclick="go_full_screen()">Full Screen</button><br />
-    </div>
+var grid = 16;
+var count = 0;
+  
+var snake = {
+  x: 160,
+  y: 160,
+  
+  // snake velocity. moves one grid length every frame in either the x or y direction
+  dx: grid,
+  dy: 0,
+  
+  // keep track of all grids the snake body occupies
+  cells: [],
+  
+  // length of the snake. grows when eating an apple
+  maxCells: 4
+};
+var apple = {
+  x: 320,
+  y: 320
+};
 
-    <!--
-      <h2>Select which mode you would like to play in.</h2>
-      <button id="Easy">Easy</button><br />
-      <button id="Medium">Medium</button><br />
-      <button id="Difficult">Difficult</button>
+// get random whole numbers in a specific range
+// @see https://stackoverflow.com/a/1527820/2124254
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
 
-<button id="high-score">Get your current high score for this game.</button>
--->
-    <div id="mode-wrapper" style="display: inline; width: auto;">
-    </div>
+// game loop
+function loop() {
+  requestAnimationFrame(loop);
 
-    <div id="game-area" tabindex="0">
-    </div>
-    <script type="text/javascript" src="./js/snake.js"></script>
-    <script type="text/javascript">
-        var mySnakeBoard = new SNAKE.Board(  {
-            boardContainer: "game-area",
-            fullScreen: true
-        });  
-    </script>
-    <script type="text/javascript">
-      function go_full_screen(){
-        var elem = document.documentElement;
-        if (elem.requestFullscreen) {
-          elem.requestFullscreen();
-        } else if (elem.msRequestFullscreen) {
-          elem.msRequestFullscreen();
-        } else if (elem.mozRequestFullScreen) {
-          elem.mozRequestFullScreen();
-        } else if (elem.webkitRequestFullscreen) {
-          elem.webkitRequestFullscreen();
-        }
+  // slow game loop to 15 fps instead of 60 (60/15 = 4)
+  if (++count < 4) {
+    return;
+  }
+
+  count = 0;
+  context.clearRect(0,0,canvas.width,canvas.height);
+
+  // move snake by it's velocity
+  snake.x += snake.dx;
+  snake.y += snake.dy;
+
+  // wrap snake position horizontally on edge of screen
+  if (snake.x < 0) {
+    snake.x = canvas.width - grid;
+  }
+  else if (snake.x >= canvas.width) {
+    snake.x = 0;
+  }
+  
+  // wrap snake position vertically on edge of screen
+  if (snake.y < 0) {
+    snake.y = canvas.height - grid;
+  }
+  else if (snake.y >= canvas.height) {
+    snake.y = 0;
+  }
+
+  // keep track of where snake has been. front of the array is always the head
+  snake.cells.unshift({x: snake.x, y: snake.y});
+
+  // remove cells as we move away from them
+  if (snake.cells.length > snake.maxCells) {
+    snake.cells.pop();
+  }
+
+  // draw apple
+  context.fillStyle = 'red';
+  context.fillRect(apple.x, apple.y, grid-1, grid-1);
+
+  // draw snake one cell at a time
+  context.fillStyle = 'green';
+  snake.cells.forEach(function(cell, index) {
+    
+    // drawing 1 px smaller than the grid creates a grid effect in the snake body so you can see how long it is
+    context.fillRect(cell.x, cell.y, grid-1, grid-1);  
+
+    // snake ate apple
+    if (cell.x === apple.x && cell.y === apple.y) {
+      snake.maxCells++;
+
+      // canvas is 400x400 which is 25x25 grids 
+      apple.x = getRandomInt(0, 25) * grid;
+      apple.y = getRandomInt(0, 25) * grid;
+    }
+
+    // check collision with all cells after this one (modified bubble sort)
+    for (var i = index + 1; i < snake.cells.length; i++) {
+      
+      // snake occupies same space as a body part. reset game
+      if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
+        snake.x = 160;
+        snake.y = 160;
+        snake.cells = [];
+        snake.maxCells = 4;
+        snake.dx = grid;
+        snake.dy = 0;
+
+        apple.x = getRandomInt(0, 25) * grid;
+        apple.y = getRandomInt(0, 25) * grid;
       }
-  </script>
+    }
+  });
+}
+
+// listen to keyboard events to move the snake
+document.addEventListener('keydown', function(e) {
+  // prevent snake from backtracking on itself by checking that it's 
+  // not already moving on the same axis (pressing left while moving
+  // left won't do anything, and pressing right while moving left
+  // shouldn't let you collide with your own body)
+  
+  // left arrow key
+  if (e.which === 37 && snake.dx === 0) {
+    snake.dx = -grid;
+    snake.dy = 0;
+  }
+  // up arrow key
+  else if (e.which === 38 && snake.dy === 0) {
+    snake.dy = -grid;
+    snake.dx = 0;
+  }
+  // right arrow key
+  else if (e.which === 39 && snake.dx === 0) {
+    snake.dx = grid;
+    snake.dy = 0;
+  }
+  // down arrow key
+  else if (e.which === 40 && snake.dy === 0) {
+    snake.dy = grid;
+    snake.dx = 0;
+  }
+});
+
+// start the game
+requestAnimationFrame(loop);
+</script>
 </body>
 </html>
