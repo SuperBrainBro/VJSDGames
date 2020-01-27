@@ -64,6 +64,11 @@ div.game-item {
 	border-right-color: #006699;
 	background-color: #003366;
 }
+
+div.game-table {
+	width: 100%;
+}
+
 div.wrapper {
 	width: 90%;
 	padding: 5px;
