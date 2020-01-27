@@ -27,10 +27,10 @@ p {
 
 #titlecontent {
 	border-style: solid;
-	border-color: white;
+	border-color: #add8e6;
 	border-width: 10px;
 	border-radius: 5px;
-	background-color: add8e6;
+	background-color: #add8e6;
 }
 
 div.game-item:hover {
@@ -57,9 +57,9 @@ div.game-item {
 	background-color: #003366;
 }
 div.wrapper {
-	width: 100%;
+	width: 50%;
 	height: 100%;
-	border-width: 8px;
+	border-width: 4px;
 	border-style: solid;
 	border-top-color: #0077b3;
 	border-bottom-color: #005580;
@@ -116,10 +116,10 @@ div.side-ad {
 
 #footercontent {
 	border-style: solid;
-	border-color: white;
+	border-color: #add8e6;
 	border-width: 5px;
 	border-radius: 5px;
-	background-color: add8e6;
+	background-color: #add8e6;
 }
 
 a {
