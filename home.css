@@ -36,7 +36,7 @@ p {
 
 div.game-item:hover {
 	width: 100%;
-	padding: 5px;
+	padding: 20px;
 	margin: auto;
 	height: 100%;
 	border-width: 8px;
@@ -50,7 +50,7 @@ div.game-item:hover {
 
 div.game-item {
 	width: 100%;
-	padding: 5px;
+	padding: 20px;
 	margin: auto;
 	height: 100%;
 	border-width: 8px;
