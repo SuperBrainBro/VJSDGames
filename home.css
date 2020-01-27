@@ -35,7 +35,9 @@ p {
 }
 
 div.game-item:hover {
-	width: 100%;
+	width: 50%;
+	padding: 5px;
+	margin: auto;
 	height: 100%;
 	border-width: 8px;
 	border-style: solid;
@@ -47,7 +49,9 @@ div.game-item:hover {
 }
 
 div.game-item {
-	width: 100%;
+	width: 50%;
+	padding: 5px;
+	margin: auto;
 	height: 100%;
 	border-width: 8px;
 	border-style: solid;
