@@ -69,11 +69,11 @@ div.game-table {
 	width: 100%;
 }
 
-div.wrapper {
+span.wrapper {
 	width: auto;
 	padding: 5px;
-	margin: auto;
 	height: 100%;
+	
 }
 
 div.bottom-ad {
